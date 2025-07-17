@@ -1,221 +1,302 @@
----
-
-# 🧠 **Kubernetes – Introduction and Core Concepts**
 
 ---
 
-## 🚀 Introduction to Kubernetes
-
-### 📘 **Definition of Kubernetes:**
-
-Kubernetes (often abbreviated as **K8s**) is an **open-source container orchestration platform** that automates the deployment, scaling, and management of **containerized applications**.
-
-It helps run containers (like Docker containers) in **production environments**, efficiently managing resources, uptime, and scalability.
+# 📘 **Kubernetes - Complete Guide**
 
 ---
 
-## 🔍 Core Features of Kubernetes
+## 🧠 **Introduction to Kubernetes**
+
+### 📖 **Definition:**
+
+**Kubernetes** (K8s) is an **open-source container orchestration platform** for **automating** the deployment, scaling, and management of **containerized applications**.
+
+It was developed by **Google**, now maintained by the **Cloud Native Computing Foundation (CNCF)**.
 
 ---
 
-### 🔁 1) **Auto-Restart Containers**
-
-Kubernetes monitors your applications continuously. If any container inside a **pod** crashes or stops unexpectedly, Kubernetes will automatically restart it to maintain availability.
-
-**How?**
-Through the `livenessProbe` and `restartPolicy`, Kubernetes knows when a container is unhealthy and restarts it.
-
-```yaml
-restartPolicy: Always
-```
+## 🌟 **Key Features of Kubernetes**
 
 ---
 
-### ❤️‍🩹 2) **Health Checks (Probes)**
+### 🔁 1. **Auto-Restart Containers**
 
-Kubernetes uses two main health checks:
+If a container crashes or becomes unresponsive, Kubernetes automatically restarts it to ensure the application remains available.
 
-* **Liveness Probe**: Checks if your app is *still running*. If not, it restarts the container.
-* **Readiness Probe**: Checks if your app is *ready to serve traffic*. If not, it removes it from the service load balancer.
-
-**Example:**
-
-```yaml
-livenessProbe:
-  httpGet:
-    path: /health
-    port: 8080
-```
+→ Handled via **Liveness Probes** and `restartPolicy`.
 
 ---
 
-### 📈 3) **Auto Scaling**
+### ❤️‍🩹 2. **Health Checks**
 
-Kubernetes can **scale your application automatically** based on CPU usage, memory, or custom metrics.
+Kubernetes performs regular health checks using **probes**:
 
-#### 🛠 Tool used: **Horizontal Pod Autoscaler (HPA)**
+* **Liveness Probe** – Is the app running?
+* **Readiness Probe** – Is it ready to serve traffic?
 
-* Increases or decreases the number of **pods** based on workload.
-* Keeps performance optimal while minimizing resource usage.
+---
+
+### 📈 3. **Auto Scaling**
+
+With **Horizontal Pod Autoscaler (HPA)**, Kubernetes can increase or decrease the number of pods based on resource usage like CPU.
 
 ```bash
-kubectl autoscale deployment myapp --cpu-percent=50 --min=2 --max=10
+kubectl autoscale deployment myapp --cpu-percent=50 --min=1 --max=10
 ```
 
 ---
 
-### 🌐 4) **Load Balancing**
+### ⚖️ 4. **Load Balancing**
 
-Kubernetes provides built-in **load balancing** through **Services**.
-
-* A **Service** is an abstraction layer that distributes network traffic to the right set of pods.
-* It ensures that traffic is sent only to **healthy pods** (based on readiness probes).
-
-**Types of Services:**
-
-| Type         | Description                       |
-| ------------ | --------------------------------- |
-| ClusterIP    | Internal traffic only (default)   |
-| NodePort     | Exposes service on each Node's IP |
-| LoadBalancer | External load balancer (cloud)    |
+Kubernetes distributes network traffic across multiple pods using **Services** to ensure stability and high availability.
 
 ---
 
-### 🌉 5) **Networking**
+### 🌐 5. **Networking**
 
-Each pod gets a **unique IP address**. Kubernetes networking ensures:
-
-* All pods can communicate with each other.
-* Services expose applications internally and externally.
-* DNS-based service discovery.
-
-**Tools:**
-
-* **CoreDNS** – for name resolution
-* **CNI Plugins** – for network setup (Flannel, Calico, etc.)
+Each pod in Kubernetes gets a unique IP, allowing pod-to-pod communication. **CoreDNS** enables internal DNS for service discovery.
 
 ---
 
-## ⚙️ Kubernetes Architecture
+### 🧠 6. **Auto Node Allocation**
 
-Kubernetes follows a **Master-Worker (Control Plane - Node)** architecture.
+When you deploy a pod, Kubernetes automatically schedules (places) it on a **suitable node** based on available CPU, memory, and policies.
 
----
-
-### 👑 Master Node (Control Plane)
-
-Manages and controls the entire Kubernetes cluster.
-
-**Core components:**
-
-| Component          | Description                                  |
-| ------------------ | -------------------------------------------- |
-| kube-apiserver     | Frontend of the K8s control plane            |
-| etcd               | Key-value store for cluster state            |
-| kube-scheduler     | Assigns pods to nodes                        |
-| controller-manager | Ensures desired state (e.g., replicas, jobs) |
+This is done by the **Scheduler** component of the Master Node.
 
 ---
 
-### 👷 Worker Node
+## ⚙️ **Kubernetes Architecture**
 
-Hosts your **pods** (application workloads).
+### 👑 **Master Node (Control Plane)**
 
-**Key components:**
+Controls the entire cluster.
 
-| Component             | Role                            |
-| --------------------- | ------------------------------- |
-| **kubelet**           | Talks to master, runs pods      |
-| **kube-proxy**        | Handles networking for services |
-| **Container runtime** | e.g., Docker, containerd        |
-
----
-
-## 📦 Core Concepts in Kubernetes
+* **API Server** – Entry point for commands (`kubectl`)
+* **Scheduler** – Assigns pods to nodes
+* **Controller Manager** – Maintains cluster state
+* **etcd** – Key-value store (cluster data)
 
 ---
 
-### 🧱 **Pod**
+### 👷 **Worker Node**
 
-A **Pod** is the **smallest deployable unit** in Kubernetes.
+Runs the actual **applications** in **Pods**.
 
-* A pod wraps one or more **containers**.
-* Pods share network and storage.
-* Managed by **ReplicaSets** and **Deployments**.
+* **kubelet** – Manages pods on the node
+* **kube-proxy** – Handles networking
+* **Container Runtime** – Runs containers (e.g., containerd, Docker)
+
+---
+
+### 🔲 **Pods**
+
+Smallest deployable unit. A pod wraps one or more containers that share:
+
+* Network
+* Storage
+* Lifecycle
+
+---
+
+### 🧱 **Nodes**
+
+A node is a **VM or physical server** part of the Kubernetes cluster (either master or worker node).
+
+---
+
+### 🧩 **Microservices Architecture**
+
+Kubernetes supports microservices by enabling:
+
+* Independent deployment of services
+* Individual scaling
+* Service discovery and load balancing
+
+Each microservice can run in its own pod, service, and deployment.
+
+---
+
+## 🔄 **Kubernetes Release Management**
+
+Kubernetes supports:
+
+* **Rolling Updates**: Gradually update applications with zero downtime.
+* **Rollbacks**: Instantly revert to a previous stable state if the new version fails.
+
+```bash
+kubectl rollout undo deployment myapp
+```
+
+---
+
+## 📦 **Kubernetes Objects (Resources)**
+
+Kubernetes manages applications using **API objects**, declared in YAML or JSON files.
+
+---
+
+### 🔹 1. **Pod**
+
+A wrapper around containers.
+
+---
+
+### 🔹 2. **ReplicaSet**
+
+Ensures a specified number of pod replicas are running at any given time.
+
+> 🔄 **Better than ReplicationController (RC)** which is outdated and doesn't support rollback.
+
+---
+
+### 🔹 3. **ReplicationController (Legacy)**
+
+* Old method of ensuring specified pod count.
+* Lacks modern update/rollback features.
+
+---
+
+### 🔹 4. **Deployment**
+
+Most common way to manage stateless applications.
+
+* Automatically manages ReplicaSets
+* Supports rolling updates and rollbacks
+
+```yaml
+kind: Deployment
+```
+
+---
+
+### 🔹 5. **StatefulSet**
+
+Manages **stateful applications** like databases.
+
+* Pods have **stable identities** and **persistent storage**
+* Ordered deployment and scaling
+
+Example: MongoDB, MySQL
+
+---
+
+### 🔹 6. **DaemonSet**
+
+Ensures that **one copy of a pod runs on every node**.
+
+Use case: Logging agents, monitoring agents, etc.
+
+---
+
+## 🌐 **Services in Kubernetes**
+
+---
+
+### 🔸 1. **ClusterIP (default)**
+
+* Internal service within the cluster
+* Not accessible from outside
+
+---
+
+### 🔸 2. **NodePort**
+
+* Exposes the service on a static port on each Node
+* Accessible from outside using NodeIP\:Port
+
+---
+
+### 🔸 3. **LoadBalancer**
+
+* Provisions an **external IP** using cloud provider's load balancer (AWS ELB, GCP LB, etc.)
+
+---
+
+## 🗃️ **Other Kubernetes Objects**
+
+---
+
+### 📁 3. **Volume**
+
+Kubernetes **Volumes** provide persistent or ephemeral storage for containers.
+
+* Local volumes
+* PersistentVolumes (PV) and PersistentVolumeClaims (PVC)
+
+---
+
+### 🌐 4. **Network**
+
+Handles communication:
+
+* **Pod-to-Pod**
+* **Service Discovery**
+* **Ingress/Egress control**
+* Uses CNI (Container Network Interface) plugins
+
+---
+
+### ⚙️ 5. **ConfigMap**
+
+Stores **non-sensitive** configuration as key-value pairs, injected into pods.
+
+Example use: App settings, URLs, filenames
 
 ```yaml
 apiVersion: v1
-kind: Pod
-metadata:
-  name: myapp-pod
-spec:
-  containers:
-    - name: myapp-container
-      image: nginx
+kind: ConfigMap
 ```
 
 ---
 
-### 🖥️ **Node**
+### 🔒 6. **Secret**
 
-A **Node** is a physical or virtual machine in the Kubernetes cluster.
+Stores **sensitive data** like passwords, tokens, certificates.
 
-* It can be a **master** or a **worker**.
-* Worker nodes run your applications.
-* Each node runs `kubelet`, `kube-proxy`, and a container runtime.
+* Encrypted at rest
+* Mounted as files or injected as env variables
 
----
-
-### 🔗 **Microservices Architecture**
-
-Kubernetes is ideal for managing **microservices**.
-
-#### 🧩 What are Microservices?
-
-* Architecture where apps are split into **small, independent services**.
-* Each service handles a specific function and can be developed/deployed independently.
-
-**Why K8s + Microservices?**
-
-* Easily deploy separate pods for each service.
-* Independent scaling for services.
-* Isolated failures (one service can fail without bringing down the whole app).
-* Efficient CI/CD pipelines.
-
----
-
-## 📝 Summary Table
-
-| Concept        | Description                                    |
-| -------------- | ---------------------------------------------- |
-| Kubernetes     | Container orchestration tool                   |
-| Auto-Restart   | Automatically restarts failed containers       |
-| Health Checks  | Liveness and Readiness probes                  |
-| Auto Scaling   | HPA adjusts pod count based on metrics         |
-| Load Balancing | Distributes traffic across pods                |
-| Networking     | Enables pod communication and service exposure |
-| Master Node    | Controls and manages cluster state             |
-| Worker Node    | Runs actual workloads (pods)                   |
-| Pods           | Smallest unit in K8s, wraps containers         |
-| Nodes          | Machines (VMs or physical) in the cluster      |
-| Microservices  | Independent, loosely coupled services          |
-
----
-
-## ✅ Practice & Homework
-
-### 🔧 Tools:
-
-* [ ] Install **Minikube** or use **Play with Kubernetes** online.
-* [ ] Install `kubectl` CLI.
-
-### 📘 Learn Basic Commands:
-
-```bash
-kubectl version
-kubectl cluster-info
-kubectl get nodes
-kubectl get pods
+```yaml
+apiVersion: v1
+kind: Secret
 ```
+
+---
+
+### 🌐 7. **Ingress**
+
+Manages **external access** to services (usually HTTP/HTTPS).
+
+* Works like a reverse proxy
+* Can route based on hostname/path
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+```
+
+---
+
+## ✅ Summary Table
+
+| Concept              | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| Kubernetes           | Container orchestration system                  |
+| Auto-Restart         | Restarts failed containers automatically        |
+| Health Check         | Monitors container health using probes          |
+| Auto Scaling         | Adjusts pod count based on load                 |
+| Load Balancing       | Distributes traffic across pods                 |
+| Auto Node Allocation | Schedules pods to available nodes               |
+| Pod                  | Smallest unit with containers                   |
+| ReplicaSet           | Ensures desired pod count                       |
+| Deployment           | Manages stateless apps with updates/rollbacks   |
+| StatefulSet          | For stateful apps with storage needs            |
+| DaemonSet            | Runs one pod per node                           |
+| Services             | Expose apps (ClusterIP, NodePort, LoadBalancer) |
+| Volume               | Persistent or shared storage                    |
+| ConfigMap            | Stores app configurations                       |
+| Secret               | Stores sensitive credentials                    |
+| Ingress              | HTTP routing from outside the cluster           |
 
 ---
