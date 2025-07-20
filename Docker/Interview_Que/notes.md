@@ -1,4 +1,3 @@
-Great initiative, Vishal! I checked your GitHub repo: [Devops → Docker folder](https://github.com/Vishall08/Devops/tree/main/Docker), and you've covered a lot of Docker fundamentals already (installation, basic commands, Dockerfile, Docker Compose, networks, volumes, Nginx reverse proxy, etc.).
 
 Below is a **comprehensive list of Docker interview questions**, broken into two parts:
 
