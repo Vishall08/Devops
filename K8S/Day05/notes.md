@@ -1,7 +1,7 @@
 
 ---
 
-### ✅**ReplicationController & ReplicaSet
+### ✅** ReplicationController & ReplicaSet
 
 ---
 
