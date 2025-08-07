@@ -1,0 +1,158 @@
+# Jenkins - Day 02: Node.js CI/CD, Webhooks, and Job Chaining
+
+## 🔧 Node.js CI/CD Project with Jenkins
+
+### 📆 Project Structure
+
+```
+myapp/
+├── index.js
+├── package.json
+└── test/
+    └── test.js
+```
+
+### 🔍 package.json
+
+```json
+{
+  "name": "node-app",
+  "description": "hello jenkins test app",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.12.0"
+  },
+  "devDependencies": {
+    "mocha": "10.2.0",
+    "supertest": "6.3.3"
+  }
+}
+```
+
+### 💻 index.js
+
+```javascript
+var express = require('express'); 
+var app = express();
+
+app.get('/', function (req, res) { 
+  res.send('changed not'); 
+});
+
+app.listen(process.env.PORT || 3000); 
+module.exports = app; 
+```
+
+### ✅ test/test.js
+
+```javascript
+var request = require('supertest');
+var app = require('../index.js');
+
+describe('GET /', function() {
+  it('respond with 404 page not found', function(done) {
+    request(app)
+      .get('/nonexistentpage')
+      .expect(404)
+      .end(function(err, res) {
+        if (err) return done(err);
+        done();
+      });
+  });
+});
+```
+
+---
+
+## 🚀 Set up on EC2
+
+```bash
+sudo apt update
+sudo apt install npm -y
+npm -v
+sudo npm install -g pm2
+```
+
+Create and navigate to project directory:
+
+```bash
+mkdir myapp
+cd myapp
+# Add package.json and index.js as above
+npm install
+pm2 start index.js
+```
+
+> ⚠️ Ensure port **3000** is open in the EC2 security group.
+
+---
+
+## ⚙️ Jenkins Configuration for Node.js Project
+
+### ➕ Create New Freestyle Project:
+
+1. **New Item** > `nodejs-project`
+2. Type: Freestyle project
+
+### 🔢 Configuration:
+
+* **Source Code Management:**
+
+  * Git > add GitHub repository URL
+* **Build Triggers:**
+
+  * Check: `GitHub hook trigger for GITScm polling`
+* **Build Step:**
+
+  * Execute shell:
+
+  ```bash
+  npm install
+  npm test
+  ```
+* **Post-build Actions:** Optional: archive results or notify
+
+### 🎩 GitHub Webhook:
+
+1. Go to GitHub Repo > Settings > Webhooks
+2. Payload URL:
+
+```
+http://<EC2_PUBLIC_IP>:8080/github-webhook/
+```
+
+3. Content type: `application/json`
+4. Disable SSL verification if testing
+
+---
+
+## ⚡ Job Chaining
+
+Create a second job:
+
+1. New Item > `nodejs-project-run`
+2. Source Code Management: same GitHub repo
+3. **Build Triggers:**
+
+   * Check: `Build after other projects are built`
+   * Select: `nodejs-project`
+
+> ✅ Now, if you push code:
+
+* `nodejs-project` runs first (build + test)
+* On success, `nodejs-project-run` is triggered automatically
+
+---
+
+## 🔎 Summary
+
+| Topic               | Covered |
+| ------------------- | ------- |
+| Node.js App Setup   | ✅       |
+| CI with Jenkins     | ✅       |
+| Webhook Integration | ✅       |
+| Job Chaining        | ✅       |
+
+---
+
